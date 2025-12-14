@@ -84,7 +84,22 @@ else
     private List<Benefit> AllBenefits { get; set; } = new();
     private List<Benefit> FilteredBenefits { get; set; } = new();
     private string SelectedTag { get; set; } = "All";
-    private string SearchText { get; set; } = string.Empty;
+    private string SearchText
+    {
+        get => _searchText;
+        set
+        {
+            if (_searchText == value)
+            {
+                return;
+            }
+
+            _searchText = value;
+            ApplyFilter();
+        }
+    }
+
+    private string _searchText = string.Empty;
 
     private List<string> Tags { get; set; } = new() { "All" };
 
