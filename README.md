@@ -40,8 +40,7 @@ The preferred way to suggest a new benefit, discount, or resource is via a GitHu
 When the issue is created:
 
 - A GitHub Actions workflow parses the issue form.
-- It automatically:
-  - Appends a new entry to `data/benefits.json` (and mirrors it into `src/SoldierSave.Web/wwwroot/data/benefits.json`).
+- It automatically appends a new entry to `data/benefits.json`.
   - Sets:
     - `source.type` to `community`.
     - `source.reference` to `issue-<number>`.

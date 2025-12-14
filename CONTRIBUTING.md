@@ -36,7 +36,7 @@ The easiest way to contribute is by opening a **“New Benefit or Resource”** 
 5. **What happens behind the scenes**
    - When the issue is created, a GitHub Actions workflow will:
      - Parse the issue form.
-     - Append a new entry to `data/benefits.json` (and mirror it into `src/SoldierSave.Web/wwwroot/data/benefits.json`).
+     - Append a new entry to `data/benefits.json`.
      - Set:
        - `source.type` to `community`.
        - `source.reference` to `issue-<number>`.
@@ -48,8 +48,6 @@ The easiest way to contribute is by opening a **“New Benefit or Resource”** 
    - After the pull request is merged and the site redeploys, your benefit will appear on the homepage and can be searched and filtered by tags.
    - Screenshot placeholder:  
      `![Step 6 – See your benefit on SoldierSave.com](docs/screenshots/contrib-benefit-06-benefit-visible.png)`
-
-There is also an in‑app “How to contribute” page on SoldierSave.com that shows these same instructions.
 
 ## Editing benefits data directly
 

@@ -100,7 +100,6 @@ jobs:
             }
 
             const benefitsPath = path.join(process.cwd(), 'data', 'benefits.json');
-            const wwwrootPath = path.join(process.cwd(), 'src', 'SoldierSave.Web', 'wwwroot', 'data', 'benefits.json');
 
             const benefits = JSON.parse(fs.readFileSync(benefitsPath, 'utf8'));
 
@@ -145,8 +144,6 @@ jobs:
 
             const payload = JSON.stringify(benefits, null, 2);
             fs.writeFileSync(benefitsPath, payload, 'utf8');
-            fs.mkdirSync(path.dirname(wwwrootPath), { recursive: true });
-            fs.writeFileSync(wwwrootPath, payload, 'utf8');
 
             core.setOutput('benefit-id', id);
 

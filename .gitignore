@@ -56,3 +56,6 @@ nunit-*.xml
 # Security Tests
 baseline-report.html
 semgrep*.json
+
+# Generated static data copy
+src/SoldierSave.Web/wwwroot/data/benefits.json
