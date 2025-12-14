@@ -30,16 +30,14 @@ jobs:
 
       - name: Restore
         run: dotnet restore
-        working-directory: soldiersave.com
 
       - name: Build Web (Release)
         run: dotnet publish src/SoldierSave.Web/SoldierSave.Web.csproj -c Release -o build
-        working-directory: soldiersave.com
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: soldiersave.com/build/wwwroot
+          path: build/wwwroot
 
   deploy:
     needs: build
@@ -54,4 +52,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-

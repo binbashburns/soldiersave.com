@@ -95,12 +95,10 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Restore dependencies
-        working-directory: soldiersave.com
         run: dotnet restore
 
       - name: Check for vulnerable packages
         id: check-for-vulnerable-packages
-        working-directory: soldiersave.com
         run: |
           dotnet list package --vulnerable --include-transitive > vulnerability-report.txt 2>&1
           # Check for actual vulnerability findings (not just the word "vulnerable")

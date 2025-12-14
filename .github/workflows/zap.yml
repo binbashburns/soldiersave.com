@@ -28,17 +28,14 @@ jobs:
           dotnet-version: '9.x'
 
       - name: Build
-        working-directory: soldiersave.com
         run: dotnet build --configuration Release
 
       - name: Start app (background)
-        working-directory: soldiersave.com
         run: |
           nohup dotnet run --project "${{ env.APP_PROJECT }}" --urls "http://0.0.0.0:${{ env.APP_PORT }}" > app.log 2>&1 &
           echo $! > app.pid
 
       - name: Wait for app readiness
-        working-directory: soldiersave.com
         run: |
           for i in {1..40}; do
             if curl -fsS "http://localhost:${{ env.APP_PORT }}/" >/dev/null; then
@@ -69,7 +66,6 @@ jobs:
 
       - name: Stop app
         if: always()
-        working-directory: soldiersave.com
         run: |
           if [ -f app.pid ]; then
             kill "$(cat app.pid)" || true
@@ -136,4 +132,3 @@ jobs:
         with:
           name: zap-security-reports
           path: zap-reports/
-
