@@ -6,8 +6,6 @@ Thanks for helping improve SoldierSave and making it easier for Soldiers and fam
 
 The easiest way to contribute is by opening a **“New Benefit or Resource”** issue. You do not need to know Git, branches, or pull requests – GitHub does that part for you.
 
-Below are step‑by‑step instructions with placeholders for screenshots you can add later.
-
 1. **Open the SoldierSave.com repository** [(link)](https://github.com/binbashburns/soldiersave.com)
    - Visit: https://github.com/binbashburns/soldiersave.com
 

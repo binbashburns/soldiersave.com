@@ -72,8 +72,6 @@ To keep links fresh, a scheduled GitHub Actions workflow runs once a week and ch
   - `area:data`
   - `link-check`
 
-Those issues include a table of failing URLs, HTTP status codes, and the associated benefit names so you can quickly fix or remove them.
-
 ## Screenshots
 
 ### Landing page with tag filters and search  
