@@ -55,4 +55,4 @@ nunit-*.xml
 
 # Security Tests
 baseline-report.html
-semgrep.json
+semgrep*.json
