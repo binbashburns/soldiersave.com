@@ -11,4 +11,13 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.10" PrivateAssets="all" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Expose CONTRIBUTING.md as a static file under /contributing/ so the app can render it -->
+    <Content Include="..\..\CONTRIBUTING.md">
+      <Link>wwwroot/contributing/CONTRIBUTING.md</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

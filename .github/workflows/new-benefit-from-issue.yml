@@ -2,13 +2,17 @@ name: Create PR from new benefit issue
 
 on:
   issues:
-    types: [opened]
+    # Run when an issue is opened OR when the "type:new-benefit" label is added later
+    types: [opened, labeled]
 
 jobs:
   create-pr-from-issue:
     if: |
       github.event.issue.state == 'open' &&
-      contains(github.event.issue.labels.*.name, 'type:new-benefit')
+      (
+        contains(github.event.issue.labels.*.name, 'type:new-benefit') ||
+        (github.event.action == 'labeled' && github.event.label.name == 'type:new-benefit')
+      )
     runs-on: ubuntu-latest
 
     steps:

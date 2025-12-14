@@ -183,3 +183,12 @@ code {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+.contrib-markdown {
+    white-space: pre-wrap;
+    background-color: #f8f9fa;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
