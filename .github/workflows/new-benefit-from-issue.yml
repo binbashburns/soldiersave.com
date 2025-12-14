@@ -21,16 +21,31 @@ jobs:
             const path = require('path');
 
             const issue = context.payload.issue;
-            const body = issue.body || '';
+            const issueNumber = issue.number;
 
-            const labels = issue.labels || [];
-            const hasNewBenefitLabel = labels.some(l => l.name === 'type:new-benefit');
+            // Fetch the latest labels from the GitHub API so this also works
+            // when jobs are re-run and the original payload is stale.
+            const { owner, repo } = context.repo;
+            const latest = await github.rest.issues.get({
+              owner,
+              repo,
+              issue_number: issueNumber
+            });
+
+            const labels = latest.data.labels || [];
+            const labelNames = labels.map(l => typeof l === 'string' ? l : l.name);
+            core.info(`Issue #${issueNumber} labels: ${labelNames.join(', ')}`);
+
+            const hasNewBenefitLabel = labelNames.includes('type:new-benefit');
 
             // Only proceed for issues that are explicitly labeled type:new-benefit
             if (!hasNewBenefitLabel) {
               core.info('Issue does not have type:new-benefit label. Skipping benefit import.');
+              core.setOutput('benefit-id', '');
               return;
             }
+
+            const body = latest.data.body || '';
 
             function getSection(label) {
               const pattern = new RegExp(`### ${label}\\s+([\\s\\S]*?)(?=\\n### |$)`, 'm');
@@ -136,6 +151,7 @@ jobs:
             core.setOutput('benefit-id', id);
 
       - name: Create pull request
+        if: ${{ steps.apply-benefit.outputs.benefit-id != '' }}
         uses: peter-evans/create-pull-request@v6
         with:
           commit-message: "Add benefit from issue #${{ github.event.issue.number }}"
