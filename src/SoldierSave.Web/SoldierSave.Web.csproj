@@ -9,16 +9,14 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.10" PrivateAssets="all" />
-    <PackageReference Include="Markdig" Version="0.37.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <!-- Expose CONTRIBUTING.md as a static file under /contributing/ so the app can render it -->
-    <Content Include="..\..\CONTRIBUTING.md">
-      <Link>wwwroot/contributing/CONTRIBUTING.md</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
+  <Target Name="CopyBenefitsJsonToWwwroot"
+          BeforeTargets="Build">
+    <MakeDir Directories="wwwroot/data" />
+    <Copy SourceFiles="..\..\data\benefits.json"
+          DestinationFiles="wwwroot/data/benefits.json"
+          SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>
