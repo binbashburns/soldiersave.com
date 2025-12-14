@@ -1,0 +1,116 @@
+name: Weekly link check
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # Every Monday at 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check benefit links
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const benefitsPath = path.join(process.cwd(), 'data', 'benefits.json');
+            const benefits = JSON.parse(fs.readFileSync(benefitsPath, 'utf8'));
+
+            const urlToBenefits = new Map();
+
+            for (const benefit of benefits) {
+              const urls = new Set();
+              if (benefit.url) {
+                urls.add(benefit.url);
+              }
+              if (Array.isArray(benefit.urls)) {
+                for (const u of benefit.urls) {
+                  if (u) urls.add(u);
+                }
+              }
+
+              for (const url of urls) {
+                if (!urlToBenefits.has(url)) {
+                  urlToBenefits.set(url, []);
+                }
+                urlToBenefits.get(url).push(benefit.name);
+              }
+            }
+
+            const entries = Array.from(urlToBenefits.entries());
+
+            async function checkUrl(url) {
+              try {
+                // Try HEAD first
+                let response = await fetch(url, { method: 'HEAD', redirect: 'follow' });
+
+                // Some servers don't support HEAD well; fall back to GET
+                if (!response.ok || response.status >= 400) {
+                  response = await fetch(url, { method: 'GET', redirect: 'follow' });
+                }
+
+                return {
+                  url,
+                  status: response.status,
+                  ok: response.status >= 200 && response.status < 400,
+                };
+              } catch (error) {
+                return {
+                  url,
+                  status: 0,
+                  ok: false,
+                  error: error.message || String(error),
+                };
+              }
+            }
+
+            const failures = [];
+
+            for (const [url, benefitNames] of entries) {
+              const result = await checkUrl(url);
+              if (!result.ok) {
+                failures.push({
+                  ...result,
+                  benefits: benefitNames,
+                });
+              }
+            }
+
+            if (failures.length === 0) {
+              core.info('All benefit links returned successful HTTP responses.');
+              return;
+            }
+
+            const lines = [];
+            lines.push('The weekly link check found issues with one or more benefit URLs.\n');
+            lines.push('| URL | Status | Benefits | Error |');
+            lines.push('| --- | ------ | -------- | ----- |');
+            for (const f of failures) {
+              const benefitsList = f.benefits.join(', ');
+              const errorText = f.error ? f.error.replace(/\n/g, ' ') : '';
+              lines.push(`| ${f.url} | ${f.status} | ${benefitsList} | ${errorText} |`);
+            }
+
+            const body = lines.join('\n');
+
+            const title = `Link check failures (${new Date().toISOString().slice(0, 10)})`;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['type:bug', 'area:data', 'link-check']
+            });
+

@@ -1,0 +1,37 @@
+name: "Feature Request"
+description: "Suggest a new feature or improvement for SoldierSave."
+title: "[Feature] "
+labels:
+  - "type:feature"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing an idea to improve SoldierSave!
+  - type: textarea
+    id: user_story
+    attributes:
+      label: User story
+      description: "Describe the feature in the format: \"As a <type of user>, I would like <capability> so that <benefit>.\""
+      placeholder: |
+        As a Soldier, I would like to filter benefits by installation so that I can quickly find relevant resources.
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details / notes
+      description: "Any extra details, examples, or rough sketches that help explain the idea."
+      placeholder: "What does success look like? Are there similar tools you like?"
+  - type: input
+    id: area
+    attributes:
+      label: Area (optional)
+      description: "What part of SoldierSave does this affect?"
+      placeholder: "Example: web UI, data model, CI/CD, link checker"
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered (optional)
+      description: "Any other approaches or workarounds you've thought about."
+

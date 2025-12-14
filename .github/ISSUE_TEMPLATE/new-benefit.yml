@@ -1,0 +1,86 @@
+name: "New Benefit or Resource"
+description: "Request a new benefit, discount, or resource to be added to SoldierSave."
+title: "[Benefit] "
+labels:
+  - "type:new-benefit"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve SoldierSave! Please fill out as much as you can.
+  - type: input
+    id: benefit_name
+    attributes:
+      label: Benefit name
+      description: "Name of the benefit, discount, or resource."
+      placeholder: "Example: Expert Voice"
+    validations:
+      required: true
+  - type: input
+    id: benefit_url
+    attributes:
+      label: Primary URL
+      description: "Main link where someone can learn more or sign up."
+      placeholder: "https://example.com/benefit"
+    validations:
+      required: true
+  - type: textarea
+    id: extra_urls
+    attributes:
+      label: Additional URLs (optional)
+      description: "Any extra links (info pages, docs, etc.). One per line."
+      placeholder: |
+        https://example.com/docs
+        https://example.com/faq
+  - type: dropdown
+    id: categories
+    attributes:
+      label: Category (pick one that fits best)
+      multiple: true
+      options:
+        - discounts
+        - travel
+        - education
+        - finance
+        - legal
+        - programs
+        - pcs
+        - retirement
+        - taxes
+        - transition
+        - spouses
+        - leader-tools
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Short description
+      description: "1-3 sentences describing what this benefit does."
+      placeholder: "Who is it for? What problem does it solve?"
+    validations:
+      required: true
+  - type: input
+    id: tags
+    attributes:
+      label: Tags
+      description: "Comma-separated tags to help people find this benefit (e.g., hunting, clothing, credit-cards)."
+      placeholder: "hunting, clothing, outdoors"
+  - type: checkboxes
+    id: eligibility
+    attributes:
+      label: Who is eligible? (check all that apply)
+      options:
+        - label: Active-duty
+        - label: Guard/Reserve
+        - label: Veteran
+        - label: Spouse
+        - label: Dependent
+        - label: Other / not sure
+  - type: textarea
+    id: notes
+    attributes:
+      label: Extra context (optional)
+      description: "Anything else we should know (e.g., regional, limited-time, docs, etc.)."
+

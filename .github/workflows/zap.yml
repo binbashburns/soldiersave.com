@@ -1,0 +1,139 @@
+name: ZAP Scan
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  zap-scan:
+    name: ZAP Security Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      APP_PROJECT: src/SoldierSave.Web/SoldierSave.Web.csproj
+      APP_PORT: 5000
+      APP_URL: http://host.docker.internal:5000
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.x'
+
+      - name: Build
+        working-directory: soldiersave.com
+        run: dotnet build --configuration Release
+
+      - name: Start app (background)
+        working-directory: soldiersave.com
+        run: |
+          nohup dotnet run --project "${{ env.APP_PROJECT }}" --urls "http://0.0.0.0:${{ env.APP_PORT }}" > app.log 2>&1 &
+          echo $! > app.pid
+
+      - name: Wait for app readiness
+        working-directory: soldiersave.com
+        run: |
+          for i in {1..40}; do
+            if curl -fsS "http://localhost:${{ env.APP_PORT }}/" >/dev/null; then
+              echo "App ready"
+              exit 0
+            fi
+            echo "Waiting for app..."
+            sleep 3
+          done
+          echo "App did not become ready"
+          cat app.log || true
+          exit 1
+
+      - name: Run ZAP baseline scan
+        run: |
+          mkdir -p zap-reports
+          chmod 777 zap-reports
+
+          docker run --rm \
+            --add-host=host.docker.internal:host-gateway \
+            -v "$(pwd)/zap-reports:/zap/wrk:rw" \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py \
+              -t "${{ env.APP_URL }}" \
+              -r baseline-report.html \
+              -j baseline-report.json \
+              -d -I || true
+
+      - name: Stop app
+        if: always()
+        working-directory: soldiersave.com
+        run: |
+          if [ -f app.pid ]; then
+            kill "$(cat app.pid)" || true
+          fi
+
+      - name: Create ZAP scan summary
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            let comment = '## ZAP Security Scan\n\n';
+
+            try {
+              if (fs.existsSync('zap-reports/baseline-report.json')) {
+                const report = JSON.parse(fs.readFileSync('zap-reports/baseline-report.json', 'utf8'));
+                const alerts = report.site?.[0]?.alerts || [];
+                const counts = { High: 0, Medium: 0, Low: 0, Informational: 0 };
+
+                alerts.forEach(alert => {
+                  let risk;
+                  switch (alert.riskcode) {
+                    case '3': risk = 'High'; break;
+                    case '2': risk = 'Medium'; break;
+                    case '1': risk = 'Low'; break;
+                    case '0': risk = 'Informational'; break;
+                    default: risk = 'Unknown';
+                  }
+
+                  const count = alert.instances?.length || 0;
+                  if (counts.hasOwnProperty(risk)) {
+                    counts[risk] += count;
+                  }
+                });
+
+                comment += `**Baseline:** 🔴 ${counts.High} | 🟡 ${counts.Medium} | ⚫ ${counts.Low} | 🟦 ${counts.Informational}\n`;
+
+                if (counts.High > 0) {
+                  comment += `\n🔴 **${counts.High} high risk issues found**`;
+                } else if (counts.Medium > 0) {
+                  comment += `\n🟡 **${counts.Medium} medium risk issues found**`;
+                } else {
+                  comment += `\n✅ **No high or medium risk issues**`;
+                }
+              } else {
+                comment += `**Baseline:** ⚠️ Scan failed\n`;
+              }
+            } catch (error) {
+              comment += `**Baseline:** ⚠️ Scan failed\n`;
+            }
+
+            comment += `\n\n[Download reports](${context.payload.repository.html_url}/actions/runs/${context.runId}#artifacts)\n`;
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Upload ZAP reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-security-reports
+          path: zap-reports/
+

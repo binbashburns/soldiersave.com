@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SoldierSave Benefit",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "url",
+    "summary",
+    "categories",
+    "tags",
+    "addedBy"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Stable unique slug for the benefit"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable title"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Primary external link for the benefit"
+    },
+    "urls": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri"
+      },
+      "description": "All external links associated with the benefit"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Short description of the benefit"
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "High-level categories (e.g., discounts, education)"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Filterable tags (e.g., hunting, clothing, taxes)"
+    },
+    "eligibility": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Optional eligibility markers (e.g., active-duty, veteran, spouse)"
+    },
+    "source": {
+      "type": "object",
+      "description": "Optional original source metadata",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Source type (e.g., pdf, adoc, community)"
+        },
+        "reference": {
+          "type": "string",
+          "description": "File or URL of original source"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "addedBy": {
+      "type": "string",
+      "description": "GitHub username, handle, or name of contributor who surfaced this benefit"
+    },
+    "addedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Optional timestamp for when the benefit was added"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,142 @@
+name: Security Scans
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  schedule:
+    - cron: '0 6 * * 1'
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+  checks: read
+  pull-requests: write
+
+jobs:
+  semgrep:
+    name: Semgrep Security Scan
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    if: (github.actor != 'dependabot[bot]')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep
+        run: semgrep scan --config auto --json --output=semgrep.json
+
+      - name: Upload Semgrep results
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-results
+          path: semgrep.json
+        if: always()
+
+      - name: Create Semgrep summary
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            let comment = '## Semgrep Security Scan\n\n';
+            
+            try {
+              if (fs.existsSync('semgrep.json')) {
+                const results = JSON.parse(fs.readFileSync('semgrep.json', 'utf8'));
+                const findings = results.results || [];
+                
+                const critical = findings.filter(f => f.extra?.severity === 'ERROR').length;
+                const medium = findings.filter(f => f.extra?.severity === 'WARNING').length;
+                const low = findings.filter(f => f.extra?.severity === 'INFO').length;
+                
+                comment += `**Code Analysis:** critical=${critical} | medium=${medium} | low=${low}\n`;
+                
+                if (critical > 0) {
+                  comment += `\n**${critical} security issues found at critical severity**`;
+                } else if (medium > 0) {
+                  comment += `\n**${medium} potential issues found at warning severity**`;
+                } else {
+                  comment += `\n**No security issues found**`;
+                }
+              } else {
+                comment += `**Code Analysis:** Scan failed\n`;
+                comment += `\n**Could not generate results**`;
+              }
+            } catch (error) {
+              comment += `**Code Analysis:** Scan failed\n`;
+              comment += `\n**Could not parse scan results**`;
+            }
+            
+            comment += `\n\n[Download detailed reports](${context.payload.repository.html_url}/actions/runs/${context.runId}#artifacts)`;
+            
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  dotnet-dependency-audit:
+    name: .NET Builtin Dependency Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        working-directory: soldiersave.com
+        run: dotnet restore
+
+      - name: Check for vulnerable packages
+        id: check-for-vulnerable-packages
+        working-directory: soldiersave.com
+        run: |
+          dotnet list package --vulnerable --include-transitive > vulnerability-report.txt 2>&1
+          # Check for actual vulnerability findings (not just the word "vulnerable")
+          if grep -E "(has the following vulnerable|Severity:|CVE-)" vulnerability-report.txt; then
+            echo "VULNERABLE_PACKAGES_FOUND=true" >> $GITHUB_ENV
+            echo "Vulnerable packages detected!"
+            cat vulnerability-report.txt
+            exit 1
+          else
+            echo "VULNERABLE_PACKAGES_FOUND=false" >> $GITHUB_ENV
+            echo "No vulnerable packages found."
+            cat vulnerability-report.txt
+          fi
+
+      - name: Create .NET dependency summary
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let comment = '## .NET Dependency Security Scan\n\n';
+            
+            const stepFailed = '${{ steps.check-for-vulnerable-packages.outcome }}' === 'failure';
+            
+            if (stepFailed) {
+              comment += `**Dependencies:** Vulnerabilities detected\n`;
+              comment += `\n**Vulnerable packages found**`;
+            } else {
+              comment += `**Dependencies:** No vulnerabilities detected\n`;
+              comment += `\n**No vulnerable packages found**`;
+            }
+            
+            comment += `\n\n[View workflow logs](${context.payload.repository.html_url}/actions/runs/${context.runId})`;
+            
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

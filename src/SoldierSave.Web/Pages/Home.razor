@@ -1,0 +1,170 @@
+﻿@page "/"
+
+@using SoldierSave.Web.Models
+@using SoldierSave.Web.Services
+@inject BenefitService BenefitService
+
+<PageTitle>SoldierSave.com</PageTitle>
+
+<h1>SoldierSave.com</h1>
+<p>Discover military benefits, discounts, and resources in one place.</p>
+<p class="tagline">For warriors, by warriors.</p>
+
+<div class="search-bar">
+    <input class="search-input"
+           type="search"
+           placeholder="Search benefits by name, tag, category, or description"
+           @bind="SearchText"
+           @bind:event="oninput" />
+</div>
+
+<div class="filter-bar">
+    <strong>Filter by tag:</strong>
+    @foreach (var tag in Tags)
+    {
+        <button class="@GetTagButtonClass(tag)"
+                style="@GetTagButtonStyle(tag)"
+                @onclick="@(() => SelectTag(tag))">@tag</button>
+    }
+</div>
+
+@if (IsLoading)
+{
+    <p>Loading benefits...</p>
+}
+else if (FilteredBenefits.Count == 0)
+{
+    <p>No benefits found for the selected filter.</p>
+}
+else
+{
+    <ul class="benefit-list">
+        @foreach (var benefit in FilteredBenefits)
+        {
+            <li class="benefit-item">
+                <h3><a href="@benefit.Url" target="_blank" rel="noopener noreferrer">@benefit.Name</a></h3>
+                <p>@benefit.Summary</p>
+                <p>
+                    <small>
+                        @if (benefit.Tags.Count > 0)
+                        {
+                            <span>Tags:</span>
+                            @foreach (var tag in benefit.Tags)
+                            {
+                                <span class="@GetInlineTagClass(tag)">@tag</span>
+                            }
+                        }
+                        @if (!string.IsNullOrWhiteSpace(benefit.AddedBy))
+                        {
+                            <span>
+                                · Added by:
+                                @if (string.Equals(benefit.AddedBy, "@binbashburns", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <a href="https://github.com/binbashburns"
+                                       target="_blank"
+                                       rel="noopener noreferrer">@benefit.AddedBy</a>
+                                }
+                                else
+                                {
+                                    @benefit.AddedBy
+                                }
+                            </span>
+                        }
+                    </small>
+                </p>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private readonly string AllTag = "All";
+
+    private bool IsLoading { get; set; } = true;
+    private List<Benefit> AllBenefits { get; set; } = new();
+    private List<Benefit> FilteredBenefits { get; set; } = new();
+    private string SelectedTag { get; set; } = "All";
+    private string SearchText { get; set; } = string.Empty;
+
+    private List<string> Tags { get; set; } = new() { "All" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        AllBenefits = (await BenefitService.GetBenefitsAsync()).ToList();
+
+        var allTags = AllBenefits
+            .SelectMany(b => b.Tags)
+            .Where(t => !string.IsNullOrWhiteSpace(t))
+            .Select(t => t.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(t => t, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        Tags = new List<string> { AllTag };
+        Tags.AddRange(allTags);
+
+        ApplyFilter();
+        IsLoading = false;
+    }
+
+    private void SelectTag(string tag)
+    {
+        SelectedTag = tag;
+        ApplyFilter();
+    }
+
+    private void ApplyFilter()
+    {
+        IEnumerable<Benefit> query = AllBenefits;
+
+        if (SelectedTag != AllTag)
+        {
+            query = query.Where(b =>
+                b.Tags.Any(t => string.Equals(t.Trim(), SelectedTag, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        if (!string.IsNullOrWhiteSpace(SearchText))
+        {
+            var term = SearchText.Trim();
+            query = query.Where(b =>
+                b.Name.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                b.Summary.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                b.Tags.Any(t => t.Contains(term, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        FilteredBenefits = query.ToList();
+    }
+
+    private string GetTagButtonClass(string tag)
+    {
+        var isSelected = string.Equals(tag, SelectedTag, StringComparison.OrdinalIgnoreCase);
+        return isSelected ? "tag-button selected" : "tag-button";
+    }
+
+    private string GetTagButtonStyle(string tag)
+    {
+        var isSelected = string.Equals(tag, SelectedTag, StringComparison.OrdinalIgnoreCase);
+        if (isSelected)
+        {
+            return string.Empty;
+        }
+
+        // Simple deterministic color palette based on tag hash
+        var colors = new[]
+        {
+            "#e0f2ff", "#e0ffe8", "#fff4e0", "#f3e0ff", "#ffe0ea",
+            "#e0fff8", "#f0ffe0", "#e8e0ff"
+        };
+
+        var index = Math.Abs(tag.ToLowerInvariant().GetHashCode());
+        var color = colors[index % colors.Length];
+
+        return $"background-color: {color};";
+    }
+
+    private string GetInlineTagClass(string tag)
+    {
+        var isSelected = string.Equals(tag, SelectedTag, StringComparison.OrdinalIgnoreCase);
+        return isSelected ? "inline-tag selected" : "inline-tag";
+    }
+}

@@ -1,0 +1,37 @@
+name: "Bug Report"
+description: "Something on the SoldierSave site or data is broken."
+title: "[Bug] "
+labels:
+  - "type:bug"
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for reporting a bug!"
+  - type: input
+    id: area
+    attributes:
+      label: Area
+      description: "What seems affected?"
+      placeholder: "Example: data, web, CI"
+  - type: textarea
+    id: what_happened
+    attributes:
+      label: What happened?
+      description: "Describe what you saw and what you expected to happen."
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: "Step-by-step description of how to reproduce the problem."
+      placeholder: |
+        1. Go to ...
+        2. Click on ...
+        3. See error ...
+  - type: input
+    id: browser
+    attributes:
+      label: Browser / environment
+      placeholder: "Chrome, Edge, Firefox, Safari, etc."
+
