@@ -1,5 +1,8 @@
 @page "/contribute"
 
+@using Markdig
+@using Microsoft.AspNetCore.Components
+
 @inject HttpClient Http
 
 <PageTitle>How to contribute - SoldierSave.com</PageTitle>
@@ -30,11 +33,12 @@ else if (!string.IsNullOrEmpty(errorMessage))
 }
 else
 {
-    <pre class="contrib-markdown">@content</pre>
+    <div class="contrib-markdown">@renderedContent</div>
 }
 
 @code {
     private string? content;
+    private MarkupString renderedContent;
     private bool isLoading = true;
     private string? errorMessage;
 
@@ -44,6 +48,13 @@ else
         {
             // CONTRIBUTING.md is copied to wwwroot/contributing/CONTRIBUTING.md at build/publish time
             content = await Http.GetStringAsync("contributing/CONTRIBUTING.md");
+
+            var pipeline = new MarkdownPipelineBuilder()
+                .UseAdvancedExtensions()
+                .Build();
+
+            var html = Markdown.ToHtml(content, pipeline);
+            renderedContent = (MarkupString)html;
         }
         catch (Exception ex)
         {
@@ -55,4 +66,3 @@ else
         }
     }
 }
-

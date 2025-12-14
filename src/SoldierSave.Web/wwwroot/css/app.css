@@ -185,7 +185,7 @@ code {
 }
 
 .contrib-markdown {
-    white-space: pre-wrap;
+    white-space: normal;
     background-color: #f8f9fa;
     border-radius: 0.25rem;
     padding: 1rem;
