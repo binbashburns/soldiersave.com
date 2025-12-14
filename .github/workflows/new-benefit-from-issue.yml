@@ -2,17 +2,10 @@ name: Create PR from new benefit issue
 
 on:
   issues:
-    # Run when an issue is opened OR when the "type:new-benefit" label is added later
     types: [opened, labeled]
 
 jobs:
   create-pr-from-issue:
-    if: |
-      github.event.issue.state == 'open' &&
-      (
-        contains(github.event.issue.labels.*.name, 'type:new-benefit') ||
-        (github.event.action == 'labeled' && github.event.label.name == 'type:new-benefit')
-      )
     runs-on: ubuntu-latest
 
     steps:
@@ -24,11 +17,21 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const core = require('@actions/core');
             const fs = require('fs');
             const path = require('path');
 
             const issue = context.payload.issue;
             const body = issue.body || '';
+
+            const labels = issue.labels || [];
+            const hasNewBenefitLabel = labels.some(l => l.name === 'type:new-benefit');
+
+            // Only proceed for issues that are explicitly labeled type:new-benefit
+            if (!hasNewBenefitLabel) {
+              core.info('Issue does not have type:new-benefit label. Skipping benefit import.');
+              return;
+            }
 
             function getSection(label) {
               const pattern = new RegExp(`### ${label}\\s+([\\s\\S]*?)(?=\\n### |$)`, 'm');
