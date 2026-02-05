@@ -5362,5 +5362,31 @@
     },
     "addedBy": "@binbashburns",
     "addedAt": "2025-12-14T17:28:46.239345Z"
+  },
+  {
+    "id": "coursera-free-for-veterans",
+    "name": "Coursera Free for Veterans",
+    "url": "https://veteranstransitionsupport.org/no-cost-coursera/",
+    "urls": [
+      "https://veteranstransitionsupport.org/no-cost-coursera/"
+    ],
+    "summary": "Veterans and service members can access Coursera courses completely free through Veterans Transition Support. This provides free online learning across thousands of courses in technology, business, data science, and more.",
+    "categories": [
+      "education-benefits"
+    ],
+    "tags": [
+      "education-benefits",
+      "transitioning-out-of-the-military"
+    ],
+    "eligibility": [
+      "veteran",
+      "active-duty"
+    ],
+    "source": {
+      "type": "community",
+      "reference": "manual-add"
+    },
+    "addedBy": "@github-copilot",
+    "addedAt": "2026-02-05T00:48:00.000000Z"
   }
 ]
