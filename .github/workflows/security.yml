@@ -33,3 +33,6 @@ jobs:
     uses: binbashburns/security-pipelines/.github/workflows/sast.yml@main
     with:
       language: javascript
+
+  dast:
+    uses: binbashburns/security-pipelines/.github/workflows/dast.yml@main
