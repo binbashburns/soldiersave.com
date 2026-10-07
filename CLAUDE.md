@@ -24,7 +24,8 @@ Contributions arrive as GitHub issues; a workflow parses the issue form and open
 | `docs/ci.md` | What each workflow does and why. |
 
 There is no `global.json`, `Directory.Build.props`, or `nuget.config`; the SDK version is pinned
-only in CI via `actions/setup-dotnet`. Bootstrap 5.3.8 is vendored under `wwwroot/lib/` as the
+only in CI via `actions/setup-dotnet`. `Microsoft.NET.ILLink.Tasks` is referenced explicitly in the csproj
+so the lockfile does not depend on the SDK patch level (see the comment there). Bootstrap 5.3.8 is vendored under `wwwroot/lib/` as the
 minified CSS (plus source map) only; the site loads no Bootstrap JavaScript, so the rest of the
 dist is deliberately not checked in.
 
