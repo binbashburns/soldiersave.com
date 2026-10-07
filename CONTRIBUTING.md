@@ -41,13 +41,17 @@ The easiest way to contribute is by opening a **“New Benefit or Resource”** 
        - `source.type` to `community`.
        - `source.reference` to `issue-<number>`.
        - `addedBy` to your GitHub handle.
+     - Validate the result against `data/benefits.schema.json`.
      - Open a pull request on a `new-benefit/issue-<number>` branch with those changes.
+   - If something in the form can't be imported – a missing required field, or a link that isn't a
+     plain `http(s)` URL – the workflow comments on your issue explaining what to fix. **Edit the
+     issue** and the import runs again automatically; you don't need to open a new one.
    - I (or another maintainer) will then review and merge the PR.
 
 6. **Check your contribution on SoldierSave.com**
    - After the pull request is merged and the site redeploys, your benefit will appear on the homepage and can be searched and filtered by tags.
-   - Screenshot placeholder:  
-     `![Step 6 – See your benefit on SoldierSave.com](docs/screenshots/contrib-benefit-06-benefit-visible.png)`
+
+     ![Step 6 – See your benefit on SoldierSave.com](docs/screenshots/contrib-benefit-06-benefit-visible.png)
 
 ## Editing benefits data directly
 
@@ -77,8 +81,23 @@ Each entry looks roughly like:
 Guidelines:
 
 - Keep `id` unique, lowercase, and hyphenated (no spaces).
-- `tags` should be short slugs (e.g., `discounts`, `travel`, `taxes`, `veterans-day`).
+- `tags` should be short slugs (e.g., `discounts`, `travel`, `taxes`, `veterans-day`). Prefer a tag
+  that is already in use over inventing a new one.
 - Use your GitHub username (or preferred handle) for `addedBy`.
+- `url` and everything in `urls` must be an absolute `http` or `https` link, with no embedded
+  credentials. Anything else is rejected, and the site will not render it as a link.
+- No extra fields: `data/benefits.schema.json` sets `additionalProperties: false`, so an
+  unrecognised key fails validation.
+
+Before opening a pull request, check your edit:
+
+```bash
+python -m pip install -r .github/scripts/requirements.txt
+python .github/scripts/validate_catalog.py
+```
+
+This is the same check CI runs, and it also catches duplicate IDs, blank summaries, and leftover
+`_No response_` placeholders.
 
 
 ## Development
@@ -91,3 +110,6 @@ dotnet run --project src/SoldierSave.Web/SoldierSave.Web.csproj
 ```
 
 Then browse to the URL printed in the console (usually `https://localhost:port`).
+
+The test suites and the CI layout are described in the [README](README.md#running-the-tests) and in
+[`docs/ci.md`](docs/ci.md).

@@ -59,3 +59,10 @@ semgrep*.json
 
 # Generated static data copy
 src/SoldierSave.Web/wwwroot/data/benefits.json
+
+# Python maintenance tooling
+__pycache__/
+.venv/
+
+# Local working notes, not part of the site
+FEATURE-IDEAS.md

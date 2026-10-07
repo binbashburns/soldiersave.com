@@ -8,12 +8,12 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: "pages"
-  cancel-in-progress: true
+  # Never cancel a deploy that is already publishing: a half-applied Pages
+  # deployment is worse than a queued one.
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -22,17 +22,33 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "9.0.x"
+          global-json-file: global.json
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Deploy gate: a catalog that fails its schema must never reach production.
+      # check_publish.py below only verifies assets, not the data itself.
+      - name: Validate catalog
+        run: |
+          python -m pip install -r .github/scripts/requirements.txt
+          python .github/scripts/validate_catalog.py
 
       - name: Restore
         run: dotnet restore
 
       - name: Build Web (Release)
         run: dotnet publish src/SoldierSave.Web/SoldierSave.Web.csproj -c Release -o build
+
+      - name: Verify published assets and catalog
+        run: python3 .github/scripts/check_publish.py build/wwwroot
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -42,6 +58,10 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

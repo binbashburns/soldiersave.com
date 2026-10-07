@@ -78,6 +78,30 @@ a, .btn-link {
     .loading-progress circle {
         fill: none;
         stroke: #e0e0e0;
+        stroke-width: 0.6rem;
+        transform-origin: 50% 50%;
+        transform: rotate(-90deg);
+    }
+
+        .loading-progress circle:last-child {
+            stroke: #1b6ec2;
+            stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
+            transition: stroke-dasharray 0.05s ease-in-out;
+        }
+
+.loading-progress-text {
+    position: absolute;
+    text-align: center;
+    font-weight: bold;
+    inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
+}
+
+    .loading-progress-text:after {
+        content: var(--blazor-load-percentage-text, "Loading");
+    }
+
+code {
+    color: #c02d76;
 }
 
 .filter-bar {
@@ -149,32 +173,6 @@ a, .btn-link {
     color: #fff;
 }
 
-        stroke-width: 0.6rem;
-        transform-origin: 50% 50%;
-        transform: rotate(-90deg);
-    }
-
-        .loading-progress circle:last-child {
-            stroke: #1b6ec2;
-            stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
-            transition: stroke-dasharray 0.05s ease-in-out;
-        }
-
-.loading-progress-text {
-    position: absolute;
-    text-align: center;
-    font-weight: bold;
-    inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
-}
-
-    .loading-progress-text:after {
-        content: var(--blazor-load-percentage-text, "Loading");
-    }
-
-code {
-    color: #c02d76;
-}
-
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
     color: var(--bs-secondary-color);
     text-align: end;
@@ -191,4 +189,39 @@ code {
     padding: 1rem;
     font-size: 0.95rem;
     line-height: 1.4;
+}
+
+/* Tag chip palette. Home.razor picks one of these by hashing the tag name;
+   keep TagColorCount there in step with the number of rules here. An inline
+   style would be blocked by the page's Content-Security-Policy. */
+.tag-button.tag-color-0 {
+    background-color: #e0f2ff;
+}
+
+.tag-button.tag-color-1 {
+    background-color: #e0ffe8;
+}
+
+.tag-button.tag-color-2 {
+    background-color: #fff4e0;
+}
+
+.tag-button.tag-color-3 {
+    background-color: #f3e0ff;
+}
+
+.tag-button.tag-color-4 {
+    background-color: #ffe0ea;
+}
+
+.tag-button.tag-color-5 {
+    background-color: #e0fff8;
+}
+
+.tag-button.tag-color-6 {
+    background-color: #f0ffe0;
+}
+
+.tag-button.tag-color-7 {
+    background-color: #e8e0ff;
 }

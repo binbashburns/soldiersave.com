@@ -1,0 +1,52 @@
+name: Validate application and catalog
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# A full publish plus a Chromium download per push is expensive; supersede
+# in-flight runs on a branch rather than queueing them.
+concurrency:
+  group: validate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install validation tools
+        run: python -m pip install -r .github/scripts/requirements.txt -r tests/browser/requirements.txt
+      - name: Test issue automation
+        run: node --test tests/workflows/*.test.cjs
+      - name: Test catalog and link checks
+        run: python -m unittest discover -s tests/maintenance -v
+      - name: Validate catalog
+        run: python .github/scripts/validate_catalog.py
+      - name: Restore
+        run: dotnet restore
+      - name: Publish application
+        run: dotnet publish src/SoldierSave.Web/SoldierSave.Web.csproj -c Release -o artifacts/publish
+      - name: Verify published assets
+        run: python .github/scripts/check_publish.py artifacts/publish/wwwroot
+      - name: Install Chromium
+        run: python -m playwright install --with-deps chromium
+      - name: Test browser behavior
+        run: python -m unittest discover -s tests/browser -v

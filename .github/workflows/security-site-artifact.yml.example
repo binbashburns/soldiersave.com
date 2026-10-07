@@ -1,14 +1,21 @@
-# Security scanning is delegated to the reusable workflows in
-# binbashburns/security-pipelines. See docs/ci.md for what each job covers.
+# STAGED - NOT ACTIVE.
 #
-# The `@main` refs track that library's default branch. Once it cuts a release,
-# pin these to a tag or commit SHA.
+# GitHub Actions only loads .yml/.yaml files from .github/workflows, so the
+# .example suffix keeps this inert while it sits next to the file it replaces.
 #
-# DAST currently scans the deployed site because the reusable workflows check out
-# the CALLER's repo and cannot build a Blazor app themselves. Once
-# security-pipelines ships its `site-artifact` / `site-path` inputs, switch to
-# .github/workflows/security-site-artifact.yml.example, which builds once and
-# hands the published output to both dast and link-check.
+# Switch to this once binbashburns/security-pipelines publishes the
+# `site-artifact` and `site-path` inputs on link-check.yml and dast.yml. As of
+# this writing they exist only in that repo's working tree, not at @main, and a
+# call using them fails with "invalid input". That repo is under active change,
+# so re-check the input names against what actually shipped before renaming this
+# file over .github/workflows/security.yml.
+#
+# Why bother: reusable workflows check out the CALLER's repo and have no .NET
+# build step, so they cannot produce the published Blazor output themselves.
+# Building once here and handing the artifact to both scanners means ZAP scans
+# the real application rather than the deployed site (so a regression is caught
+# on the PR, before deploy), and lychee checks the generated HTML with its asset
+# references resolved instead of the unbuilt source.
 name: security
 
 on:
@@ -20,8 +27,6 @@ on:
     - cron: "0 6 * * 1"
   workflow_dispatch:
 
-# Concurrency lives in the caller: `github.workflow` inside a called workflow
-# resolves to that file's name, so only this file can key the group safely.
 concurrency:
   group: security-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -35,7 +40,28 @@ jobs:
     permissions:
       contents: read
 
-  # Stage 2 - static analysis, in parallel once secrets passes.
+  # Build once; every scanner below consumes this artifact.
+  build-site:
+    needs: secrets
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      - run: dotnet restore --locked-mode
+      - run: dotnet publish src/SoldierSave.Web/SoldierSave.Web.csproj -c Release -o _site
+      - uses: actions/upload-artifact@v4
+        with:
+          name: soldiersave-site
+          path: _site/wwwroot/
+          if-no-files-found: error
+
+  # Stage 2 - static analysis.
   sast:
     needs: secrets
     if: github.event_name == 'pull_request'
@@ -46,9 +72,6 @@ jobs:
     with:
       language: csharp,javascript,python
 
-  # Dependency vulnerabilities. Needs packages.lock.json (enabled via
-  # RestorePackagesWithLockFile in the csproj) or Syft finds only action refs
-  # and Grype has nothing to scan.
   sbom:
     needs: secrets
     uses: binbashburns/security-pipelines/.github/workflows/sbom-vuln.yml@main
@@ -56,35 +79,31 @@ jobs:
       contents: read
       pull-requests: write
 
-  # Prose links only. The site's own HTML references Blazor assets that do not
-  # exist until after a publish, so scanning source HTML only produces noise.
-  # create-issue stays false: this pipeline's @main issue step opens a NEW issue
-  # per failing run, which is what produced the long backlog of dated
-  # "Link check failures" issues. Findings stay in the job summary and artifact.
+  # Now checks the BUILT html, so SoldierSave.Web.styles.css and the root-relative
+  # hrefs in index.html resolve instead of reporting as dead links.
   link-check:
-    needs: secrets
+    needs: [secrets, build-site]
     uses: binbashburns/security-pipelines/.github/workflows/link-check.yml@main
     permissions:
       contents: read
       issues: write
     with:
-      paths: "README.md CONTRIBUTING.md SECURITY.md docs/*.md"
-      create-issue: false
+      paths: "README.md CONTRIBUTING.md SECURITY.md docs/*.md _site/**/*.html"
+      create-issue: true
+      site-artifact: soldiersave-site
+      site-path: _site
 
-  # Stage 3 - dynamic scan against the deployed site. serve-port 0 skips the
-  # local static server, which would otherwise serve this repo's source tree.
+  # Stage 3 - dynamic scan of the freshly built app rather than the live site.
   dast:
-    needs: secrets
+    needs: [secrets, sbom, build-site]
     uses: binbashburns/security-pipelines/.github/workflows/dast.yml@main
     permissions:
       contents: read
       pull-requests: write
     with:
-      serve-port: 0
-      target-url: https://soldiersave.com/
+      site-artifact: soldiersave-site
+      serve-path: _site
 
-  # Catalog link audit. Separate from the lychee job above: it checks the 200+
-  # external benefit URLs and maintains its own single tracking issue.
   benefit-links:
     needs: secrets
     if: github.event_name != 'pull_request'
@@ -103,8 +122,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      # 8 workers / 10s keeps the worst case (2 requests per URL) inside the
-      # 20 minute job timeout; the defaults do not.
       - name: Check catalog URLs
         run: python .github/scripts/check_benefit_links.py --workers 8 --timeout 10
       - name: Save link report
