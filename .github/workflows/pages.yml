@@ -42,7 +42,7 @@ jobs:
           python .github/scripts/validate_catalog.py
 
       - name: Restore
-        run: dotnet restore --locked-mode
+        run: dotnet restore
 
       - name: Build Web (Release)
         run: dotnet publish src/SoldierSave.Web/SoldierSave.Web.csproj -c Release -o build

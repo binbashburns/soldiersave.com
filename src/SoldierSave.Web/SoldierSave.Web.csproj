@@ -4,14 +4,14 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <!-- packages.lock.json makes restores reproducible and gives Syft/Grype and
-         Dependabot a dependency graph to read. Without it the SBOM job catalogs
-         only GitHub Action refs and skips the vulnerability scan entirely.
-         The SDK also adds implicit package references (ILLink.Tasks,
-         Sdk.WebAssembly.Pack, ...) at its own bundled version, so the lockfile is
-         only valid for the exact SDK in global.json. Bump both together:
-         edit global.json, then restore with the force-evaluate flag and commit the
-         regenerated lockfile. -->
+    <!-- packages.lock.json exists so Syft/Grype and Dependabot have a dependency
+         graph to read; without it the SBOM job catalogs only GitHub Action refs
+         and skips the vulnerability scan. CI deliberately does NOT restore with
+         the locked-mode flag: the SDK adds implicit references (ILLink.Tasks,
+         Sdk.WebAssembly.Pack) whose versions come from the runner's installed
+         workload manifests, not from the SDK version, so the same SDK yields
+         different lock entries on different machines. Regenerate after changing
+         a PackageReference with a restore using the force-evaluate flag. -->
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 

@@ -23,12 +23,9 @@ Contributions arrive as GitHub issues; a workflow parses the issue form and open
 | `tests/` | Three suites: `workflows/` (node), `maintenance/` (unittest), `browser/` (Playwright). |
 | `docs/ci.md` | What each workflow does and why. |
 
-`global.json` pins the SDK exactly (`rollForward: disable`) and both workflows feed it to
-`actions/setup-dotnet`. This is load-bearing: the SDK adds implicit package references
-(`Microsoft.NET.ILLink.Tasks`, `Microsoft.NET.Sdk.WebAssembly.Pack`, ...) at its own bundled
-version, and those versions are recorded in `packages.lock.json`. A runner with a different SDK
-fails `restore --locked-mode` with NU1004. To bump the SDK: edit `global.json`, run
-`dotnet restore --force-evaluate`, commit both. There is no `Directory.Build.props` or `nuget.config`. Bootstrap 5.3.8 is vendored under `wwwroot/lib/` as the
+`global.json` keeps everyone on a 9.0.3xx SDK (`rollForward: latestFeature`); both workflows feed
+it to `actions/setup-dotnet`. Without it the hosted runners pick their preinstalled .NET 10 SDK.
+There is no `Directory.Build.props` or `nuget.config`. Bootstrap 5.3.8 is vendored under `wwwroot/lib/` as the
 minified CSS (plus source map) only; the site loads no Bootstrap JavaScript, so the rest of the
 dist is deliberately not checked in.
 
@@ -42,9 +39,12 @@ the `CopyBenefitsJsonToWwwroot` MSBuild target and gitignored. Edit `data/benefi
 `.github/scripts/benefit-import.cjs` and asserted in `tests/workflows/benefit-import.test.cjs`.
 Renaming a form field silently breaks contributions unless all three change together.
 
-**`packages.lock.json` is committed on purpose.** CI restores with `--locked-mode`. After changing a
-`PackageReference`, regenerate it with a restore using the force-evaluate flag and commit the result,
-or CI will fail.
+**`packages.lock.json` is committed on purpose**, for the SBOM job and Dependabot. CI does *not*
+restore with `--locked-mode`: the implicit `Microsoft.NET.ILLink.Tasks` and
+`Microsoft.NET.Sdk.WebAssembly.Pack` versions come from the runner's installed workload manifests,
+not the SDK version, so locked mode fails with NU1004 whenever the runner's manifests are newer
+than the machine that generated the lockfile. After changing a `PackageReference`, regenerate it
+with a restore using the force-evaluate flag and commit the result.
 
 **No inline `style` attributes in components.** `wwwroot/index.html` ships a Content-Security-Policy
 meta tag with `style-src 'self'`, so an inline style is blocked and silently unstyled. Use a CSS
