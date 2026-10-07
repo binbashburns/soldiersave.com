@@ -7,23 +7,17 @@
     <!-- packages.lock.json makes restores reproducible and gives Syft/Grype and
          Dependabot a dependency graph to read. Without it the SBOM job catalogs
          only GitHub Action refs and skips the vulnerability scan entirely.
-         Regenerate with a restore using the force-evaluate flag. -->
+         The SDK also adds implicit package references (ILLink.Tasks,
+         Sdk.WebAssembly.Pack, ...) at its own bundled version, so the lockfile is
+         only valid for the exact SDK in global.json. Bump both together:
+         edit global.json, then restore with the force-evaluate flag and commit the
+         regenerated lockfile. -->
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.10" PrivateAssets="all" />
-    <!-- The SDK adds this reference implicitly, at whatever version its bundled
-         runtime happens to be. That version is recorded in packages.lock.json, so a
-         runner with a newer 9.0.x SDK than the lockfile was generated with fails
-         restore in locked mode (NU1004). Referencing it explicitly makes the
-         version ours to manage (Dependabot bumps it) instead of the SDK's.
-         The ILLink tool needs a runtime at least as new as its own version, so
-         keep this at or below the runtime bundled with the SDK developers use;
-         a newer runner is fine (patch roll-forward), an older one fails with
-         exit code 150. -->
-    <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="9.0.10" PrivateAssets="all" />
   </ItemGroup>
 
   <Target Name="CopyBenefitsJsonToWwwroot"

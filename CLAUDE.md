@@ -23,9 +23,12 @@ Contributions arrive as GitHub issues; a workflow parses the issue form and open
 | `tests/` | Three suites: `workflows/` (node), `maintenance/` (unittest), `browser/` (Playwright). |
 | `docs/ci.md` | What each workflow does and why. |
 
-There is no `global.json`, `Directory.Build.props`, or `nuget.config`; the SDK version is pinned
-only in CI via `actions/setup-dotnet`. `Microsoft.NET.ILLink.Tasks` is referenced explicitly in the csproj
-so the lockfile does not depend on the SDK patch level (see the comment there). Bootstrap 5.3.8 is vendored under `wwwroot/lib/` as the
+`global.json` pins the SDK exactly (`rollForward: disable`) and both workflows feed it to
+`actions/setup-dotnet`. This is load-bearing: the SDK adds implicit package references
+(`Microsoft.NET.ILLink.Tasks`, `Microsoft.NET.Sdk.WebAssembly.Pack`, ...) at its own bundled
+version, and those versions are recorded in `packages.lock.json`. A runner with a different SDK
+fails `restore --locked-mode` with NU1004. To bump the SDK: edit `global.json`, run
+`dotnet restore --force-evaluate`, commit both. There is no `Directory.Build.props` or `nuget.config`. Bootstrap 5.3.8 is vendored under `wwwroot/lib/` as the
 minified CSS (plus source map) only; the site loads no Bootstrap JavaScript, so the rest of the
 dist is deliberately not checked in.
 
