@@ -4,6 +4,11 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- packages.lock.json makes restores reproducible and gives Syft/Grype and
+         Dependabot a dependency graph to read. Without it the SBOM job catalogs
+         only GitHub Action refs and skips the vulnerability scan entirely.
+         Regenerate with a restore using the force-evaluate flag. -->
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +22,11 @@
     <Copy SourceFiles="..\..\data\benefits.json"
           DestinationFiles="wwwroot/data/benefits.json"
           SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="CreatePagesFallback" AfterTargets="Publish">
+    <Copy SourceFiles="$(PublishDir)wwwroot/index.html"
+          DestinationFiles="$(PublishDir)wwwroot/404.html" />
   </Target>
 
 </Project>

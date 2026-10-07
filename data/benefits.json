@@ -30,11 +30,9 @@
     "name": "Home Depot",
     "url": "https://www.homedepot.com/c/military",
     "urls": [
-      "https://www.homedepot.com/c/military",
-      "https://www.homedepot.com/c/military",
       "https://www.homedepot.com/c/military"
     ],
-    "summary": "10% off on eligible purchases and up to $400 off a year.",
+    "summary": "10% off eligible purchases, up to $400 per year.",
     "categories": [
       "discounts",
       "brand-specific"
@@ -217,11 +215,9 @@
     "name": "Operation Deploy Your Dress",
     "url": "https://operationdeployyourdress.org/",
     "urls": [
-      "https://operationdeployyourdress.org/",
-      "https://operationdeployyourdress.org/",
       "https://operationdeployyourdress.org/"
     ],
-    "summary": "Servicewomen and spouses can select one dress and accessory once a year.",
+    "summary": "Provides free formal wear and accessories to servicewomen and military spouses for balls and other special events, offsetting the cost of dressing for them.",
     "categories": [
       "discounts",
       "brand-specific"
@@ -508,7 +504,7 @@
       "https://upgradedpoints.com/travel/best-cell-phone-plans-for-military/",
       "https://upgradedpoints.com/travel/best-cell-phone-plans-for-military/"
     ],
-    "summary": "",
+    "summary": "Roundup comparing the military and veteran discounts offered by the major U.S. cell phone carriers.",
     "categories": [
       "discounts",
       "brand-specific"
@@ -528,11 +524,9 @@
   {
     "id": "active-fit-gym-membership",
     "name": "Active+Fit Gym Membership",
-    "url": "https://www.activeandfitdirect.com/faq",
+    "url": "https://www.activeandfitdirect.com/",
     "urls": [
-      "https://www.activeandfitdirect.com/faq",
-      "https://www.activeandfitdirect.com/faq",
-      "https://www.activeandfitdirect.com/faq"
+      "https://www.activeandfitdirect.com/"
     ],
     "summary": "20-70% gym discount at over 11,000 gyms.",
     "categories": [
@@ -636,11 +630,9 @@
   {
     "id": "kay-jewelers",
     "name": "Kay Jewelers",
-    "url": "https://www.kay.com/id-me",
+    "url": "https://www.kay.com/",
     "urls": [
-      "https://www.kay.com/id-me",
-      "https://www.kay.com/id-me",
-      "https://www.kay.com/id-me"
+      "https://www.kay.com/"
     ],
     "summary": "10% off jewelry.",
     "categories": [
@@ -793,14 +785,12 @@
   },
   {
     "id": "govx",
-    "name": "GOVx",
+    "name": "GovX",
     "url": "https://www.govx.com/",
     "urls": [
-      "https://www.govx.com/",
-      "https://www.govx.com/",
       "https://www.govx.com/"
     ],
-    "summary": "Website that puts out various discounts/offers once military service is verified.",
+    "summary": "Compiles exclusive military discounts across a range of brands and industries, plus tickets and travel, once military service is verified.",
     "categories": [
       "discounts",
       "portals"
@@ -1492,13 +1482,11 @@
   {
     "id": "army-e-learning",
     "name": "Army e-Learning",
-    "url": "https://learn.atis.army.mil/moodle",
+    "url": "https://armyignited.cce.af.mil/",
     "urls": [
-      "https://learn.atis.army.mil/moodle",
-      "https://learn.atis.army.mil/moodle",
-      "https://learn.atis.army.mil/moodle"
+      "https://armyignited.cce.af.mil/"
     ],
-    "summary": "Over 3,500 free courses ranging from business leadership, IT, personal development, etc.",
+    "summary": "Over 3,500 free courses covering business leadership, IT, and personal development, accessed through ArmyIgnitED.",
     "categories": [
       "education-benefits"
     ],
@@ -1522,7 +1510,7 @@
       "https://www.militaryonesource.mil/national-guard/financial-management/save-money-every-day/",
       "https://www.militaryonesource.mil/national-guard/financial-management/save-money-every-day/"
     ],
-    "summary": "",
+    "summary": "Military OneSource guidance on everyday money management, budgeting, and saving for Guard and Reserve families.",
     "categories": [
       "financial-stuff"
     ],
@@ -1738,7 +1726,7 @@
       "https://finred.usalearning.gov/pfcMap",
       "https://finred.usalearning.gov/pfcMap"
     ],
-    "summary": "",
+    "summary": "Interactive map for locating a free personal financial counselor at installations in the U.S. and overseas.",
     "categories": [
       "legal-financial"
     ],
@@ -1858,7 +1846,7 @@
       "https://www.veteransunited.com",
       "https://www.veteransunited.com"
     ],
-    "summary": "",
+    "summary": "VA-focused mortgage lender offering VA home loan financing and buyer education for service members and veterans.",
     "categories": [
       "legal-financial"
     ],
@@ -1882,7 +1870,7 @@
       "https://militarymoneymanual.com/best-va-loan-lenders/",
       "https://militarymoneymanual.com/best-va-loan-lenders/"
     ],
-    "summary": "",
+    "summary": "Comparison of VA home loan lenders to help you shop rates and fees before choosing one.",
     "categories": [
       "legal-financial"
     ],
@@ -2247,7 +2235,7 @@
       "https://www.tsp.gov/publications/tsplf14.pdf",
       "https://www.tsp.gov/publications/tsplf14.pdf"
     ],
-    "summary": "",
+    "summary": "Official Thrift Savings Plan publication explaining the individual TSP funds and how each one is invested.",
     "categories": [
       "retirement"
     ],
@@ -2271,7 +2259,7 @@
       "https://open.spotify.com/episode/2IMPavLQrKgzbv7kX8jTup?si=TPd9Iel_TGmjcXRoWBBUZw",
       "https://open.spotify.com/episode/2IMPavLQrKgzbv7kX8jTup?si=TPd9Iel_TGmjcXRoWBBUZw"
     ],
-    "summary": "",
+    "summary": "Podcast episode walking through the C, S, I, F, and G Funds and how to choose among them.",
     "categories": [
       "retirement"
     ],
@@ -2439,7 +2427,7 @@
       "https://myseco.militaryonesource.mil/portal/mystep",
       "https://myseco.militaryonesource.mil/portal/mystep"
     ],
-    "summary": "",
+    "summary": "Transition program that guides military spouses through career and education milestones from accession through separation.",
     "categories": [
       "milspouses"
     ],
@@ -2463,7 +2451,7 @@
       "https://www.militaryonesource.mil/financial-legal/taxes/miltax-military-tax-services/?gad_source=1&gclid=EAIaIQobChMI0bGCvvG0hAMVJ0dHAR02zAVqEAAYAiAAEgLmsfD_BwE",
       "https://www.militaryonesource.mil/financial-legal/taxes/miltax-military-tax-services/?gad_source=1&gclid=EAIaIQobChMI0bGCvvG0hAMVJ0dHAR02zAVqEAAYAiAAEgLmsfD_BwE"
     ],
-    "summary": "",
+    "summary": "MilTax free tax preparation and e-filing software, plus access to tax consultants, provided through Military OneSource.",
     "categories": [
       "taxes"
     ],
@@ -2487,7 +2475,7 @@
       "https://www.military.com/discounts/free-tax-preparation-for-military.html",
       "https://www.military.com/discounts/free-tax-preparation-for-military.html"
     ],
-    "summary": "",
+    "summary": "Overview of the free and discounted tax filing options available to service members and their families.",
     "categories": [
       "taxes"
     ],
@@ -2626,13 +2614,12 @@
   {
     "id": "veteran-readiness-and-employment-vr-e",
     "name": "Veteran Readiness and Employment (VR&E)",
-    "url": "https://www.va.gov/careers-employment/vocational-rehabilitation/eligibility/",
+    "url": "https://www.va.gov/careers-employment/vocational-rehabilitation/",
     "urls": [
-      "https://www.va.gov/careers-employment/vocational-rehabilitation/eligibility/",
-      "https://www.va.gov/careers-employment/vocational-rehabilitation/eligibility/",
+      "https://www.va.gov/careers-employment/vocational-rehabilitation/",
       "https://www.va.gov/careers-employment/vocational-rehabilitation/eligibility/"
     ],
-    "summary": "Veterans who are 10% or more service-related disabled and already out or a 20% pre discharge disability rating may be eligible to apply for this program which helps with job training, employment, and education.",
+    "summary": "Employment support and training for service members and veterans with a service-connected disability that limits their ability to work, including job training, education, and career counseling.",
     "categories": [
       "military-transition"
     ],
@@ -2646,30 +2633,6 @@
     },
     "addedBy": "@binbashburns",
     "addedAt": "2025-12-14T15:16:00.263158Z"
-  },
-  {
-    "id": "eligibility-for-veteran-readiness-and-employment-va",
-    "name": "Eligibility for Veteran Readiness and Employment (VA)",
-    "url": "https://www.va.gov/careers-employment/vocational-rehabilitation/eligibility/",
-    "urls": [
-      "https://www.va.gov/careers-employment/vocational-rehabilitation/eligibility/",
-      "https://www.va.gov/careers-employment/vocational-rehabilitation/eligibility/",
-      "https://www.va.gov/careers-employment/vocational-rehabilitation/eligibility/"
-    ],
-    "summary": "If you’re a service member or Veteran and have a disability that was caused—or made worse—by your active-duty service and that limits your ability to work or prevents you from working, you may be able to get employment support or services to help you live as independently as possible.",
-    "categories": [
-      "military-transition"
-    ],
-    "tags": [
-      "military-transition"
-    ],
-    "eligibility": [],
-    "source": {
-      "type": "adoc",
-      "reference": "army-benefits-unofficial-pages/modules/ROOT/pages/transition.adoc"
-    },
-    "addedBy": "@binbashburns",
-    "addedAt": "2025-12-14T15:16:00.263179Z"
   },
   {
     "id": "military-transition-org",
@@ -2698,11 +2661,9 @@
   {
     "id": "veterans-transition-support",
     "name": "Veterans Transition Support",
-    "url": "https://veteranstransitionsupport.org/vts-programs/",
+    "url": "https://veteranstransitionsupport.org/",
     "urls": [
-      "https://veteranstransitionsupport.org/vts-programs/",
-      "https://veteranstransitionsupport.org/vts-programs/",
-      "https://veteranstransitionsupport.org/vts-programs/"
+      "https://veteranstransitionsupport.org/"
     ],
     "summary": "Organization that offers additional transitioning classes, no cost OSHA/security certifications, VA classes, etc. (non gov source)",
     "categories": [
@@ -2890,14 +2851,12 @@
   },
   {
     "id": "vetjourney",
-    "name": "Vetjourney",
+    "name": "VetJourney",
     "url": "https://vetjourney.com/",
     "urls": [
-      "https://vetjourney.com/",
-      "https://vetjourney.com/",
       "https://vetjourney.com/"
     ],
-    "summary": "Transitioning resource. (non gov source)",
+    "summary": "Offers a library of transition resources and builds a 12-month separation timeline to simplify transition tasks and career planning. (Non-government source.)",
     "categories": [
       "military-transition"
     ],
@@ -3285,7 +3244,7 @@
       "https://www.militarydisneytips.com/blog/disney-armed-forces-salute/2023-disney-armed-forces-salute-announced/",
       "https://www.militarydisneytips.com/blog/disney-armed-forces-salute/2023-disney-armed-forces-salute-announced/"
     ],
-    "summary": "",
+    "summary": "Details on the Disney Armed Forces Salute discounted theme park tickets and how to use them.",
     "categories": [
       "traveling"
     ],
@@ -3427,31 +3386,6 @@
     "addedAt": "2025-12-14T15:16:00.263782Z"
   },
   {
-    "id": "armed-forces-travel",
-    "name": "Armed Forces Travel",
-    "url": "https://www.americanforcestravel.com/",
-    "urls": [
-      "https://www.americanforcestravel.com/",
-      "https://www.americanforcestravel.com/",
-      "https://www.americanforcestravel.com/"
-    ],
-    "summary": "Special discounts on hotels, flights, cars, packages, cruises, etc.",
-    "categories": [
-      "traveling"
-    ],
-    "tags": [
-      "travel",
-      "traveling"
-    ],
-    "eligibility": [],
-    "source": {
-      "type": "adoc",
-      "reference": "army-benefits-unofficial-pages/modules/ROOT/pages/travel.adoc"
-    },
-    "addedBy": "@binbashburns",
-    "addedAt": "2025-12-14T15:16:00.263797Z"
-  },
-  {
     "id": "margaritaville-at-sea",
     "name": "Margaritaville at Sea",
     "url": "https://margaritavilleatsea.com/offers/heroessailfree/",
@@ -3475,6 +3409,29 @@
     },
     "addedBy": "@binbashburns",
     "addedAt": "2025-12-14T15:16:00.263814Z"
+  },
+  {
+    "id": "american-forces-travel",
+    "name": "American Forces Travel",
+    "url": "https://www.americanforcestravel.com/",
+    "urls": [
+      "https://www.americanforcestravel.com/"
+    ],
+    "summary": "Military discounts on hotels, flights, rental cars, vacation packages, and cruises through the official MWR travel site.",
+    "categories": [
+      "traveling"
+    ],
+    "tags": [
+      "travel",
+      "traveling"
+    ],
+    "eligibility": [],
+    "source": {
+      "type": "adoc",
+      "reference": "army-benefits-unofficial-pages/modules/ROOT/pages/travel.adoc"
+    },
+    "addedBy": "@binbashburns",
+    "addedAt": "2025-12-14T15:16:00.263797Z"
   },
   {
     "id": "busch-garden-sea-world-sesame-place",
@@ -3752,7 +3709,7 @@
       "https://vip.outdoorresearch.com/welcome",
       "https://vip.outdoorresearch.com/welcome"
     ],
-    "summary": "",
+    "summary": "Pro deal program offering discounted Outdoor Research apparel and technical gear to verified service members.",
     "categories": [
       "equipment-gear"
     ],
@@ -3792,37 +3749,11 @@
     "addedAt": "2025-12-14T15:57:08.907461Z"
   },
   {
-    "id": "soldier-save",
-    "name": "Soldier Save",
-    "url": "https://soldiersave.com/component-a/1.5.6/index.html",
-    "urls": [
-      "https://soldiersave.com/component-a/1.5.6/index.html",
-      "https://soldiersave.com/component-a/1.5.6/index.html",
-      "https://soldiersave.com/component-a/1.5.6/index.html"
-    ],
-    "summary": "Similar to this document, has a huge list of discounts, programs, and more",
-    "categories": [
-      "equipment-gear"
-    ],
-    "tags": [
-      "equipment-gear"
-    ],
-    "eligibility": [],
-    "source": {
-      "type": "pdf",
-      "reference": "Military Benefits & Resources.md"
-    },
-    "addedBy": "1LT John Smith",
-    "addedAt": "2025-12-14T15:57:08.907468Z"
-  },
-  {
     "id": "spyderco",
     "name": "Spyderco",
-    "url": "https://www.spyderco.com/resources/op-focus/",
+    "url": "https://www.spyderco.com/",
     "urls": [
-      "https://www.spyderco.com/resources/op-focus/",
-      "https://www.spyderco.com/resources/op-focus/",
-      "https://www.spyderco.com/resources/op-focus/"
+      "https://www.spyderco.com/"
     ],
     "summary": "Substantial discount after signing up for their program",
     "categories": [
@@ -3942,54 +3873,6 @@
     "addedAt": "2025-12-14T15:57:08.907525Z"
   },
   {
-    "id": "govx-2",
-    "name": "GovX",
-    "url": "https://www.govx.com/",
-    "urls": [
-      "https://www.govx.com/",
-      "https://www.govx.com/",
-      "https://www.govx.com/"
-    ],
-    "summary": "Website that compiles exclusive military discounts on a variety of brands/industries, as well as tickets, travel, and other partner deals",
-    "categories": [
-      "miscellaneous"
-    ],
-    "tags": [
-      "miscellaneous"
-    ],
-    "eligibility": [],
-    "source": {
-      "type": "pdf",
-      "reference": "Military Benefits & Resources.md"
-    },
-    "addedBy": "1LT John Smith",
-    "addedAt": "2025-12-14T15:57:08.907532Z"
-  },
-  {
-    "id": "home-depot-2",
-    "name": "Home Depot",
-    "url": "https://www.homedepot.com/c/military",
-    "urls": [
-      "https://www.homedepot.com/c/military",
-      "https://www.homedepot.com/c/military",
-      "https://www.homedepot.com/c/military"
-    ],
-    "summary": "10% off eligible purchases, up to $400 annually",
-    "categories": [
-      "miscellaneous"
-    ],
-    "tags": [
-      "miscellaneous"
-    ],
-    "eligibility": [],
-    "source": {
-      "type": "pdf",
-      "reference": "Military Benefits & Resources.md"
-    },
-    "addedBy": "1LT John Smith",
-    "addedAt": "2025-12-14T15:57:08.907539Z"
-  },
-  {
     "id": "lowe-s-everyday-military-discount",
     "name": "Lowe’s Everyday Military Discount",
     "url": "https://www.lowes.com/l/about/honor-our-military",
@@ -4038,30 +3921,6 @@
     "addedAt": "2025-12-14T15:57:08.907565Z"
   },
   {
-    "id": "operation-deploy-your-dress-2",
-    "name": "Operation Deploy Your Dress",
-    "url": "https://operationdeployyourdress.org/",
-    "urls": [
-      "https://operationdeployyourdress.org/",
-      "https://operationdeployyourdress.org/",
-      "https://operationdeployyourdress.org/"
-    ],
-    "summary": "Helps military families offset the cost of formal wear for holiday balls or special events by providing free formal wear and accessories. Military or dependent ID card holders can sign up to receive two dresses and one accessory",
-    "categories": [
-      "miscellaneous"
-    ],
-    "tags": [
-      "miscellaneous"
-    ],
-    "eligibility": [],
-    "source": {
-      "type": "pdf",
-      "reference": "Military Benefits & Resources.md"
-    },
-    "addedBy": "1LT John Smith",
-    "addedAt": "2025-12-14T15:57:08.907572Z"
-  },
-  {
     "id": "veterans-canteen-service",
     "name": "Veterans Canteen Service",
     "url": "https://www.vacanteen.va.gov/VACANTEEN/PatriotStoreDirect_Automotive.asp",
@@ -4108,30 +3967,6 @@
     },
     "addedBy": "1LT John Smith",
     "addedAt": "2025-12-14T15:57:08.907594Z"
-  },
-  {
-    "id": "american-forces-travel",
-    "name": "American Forces Travel",
-    "url": "https://www.americanforcestravel.com/",
-    "urls": [
-      "https://www.americanforcestravel.com/",
-      "https://www.americanforcestravel.com/",
-      "https://www.americanforcestravel.com/"
-    ],
-    "summary": "Military discounts on hotels, flights, cars, packages, cruises, and more",
-    "categories": [
-      "travel-recreation"
-    ],
-    "tags": [
-      "travel-recreation"
-    ],
-    "eligibility": [],
-    "source": {
-      "type": "pdf",
-      "reference": "Military Benefits & Resources.md"
-    },
-    "addedBy": "1LT John Smith",
-    "addedAt": "2025-12-14T15:57:08.907603Z"
   },
   {
     "id": "armed-forces-vacation-club-2",
@@ -4542,30 +4377,6 @@
     "addedAt": "2025-12-14T15:57:08.907726Z"
   },
   {
-    "id": "milhub",
-    "name": "MilHub",
-    "url": "https://apps.apple.com/us/app/milhub/id1605061255",
-    "urls": [
-      "https://apps.apple.com/us/app/milhub/id1605061255",
-      "https://apps.apple.com/us/app/milhub/id1605061255",
-      "https://apps.apple.com/us/app/milhub/id1605061255"
-    ],
-    "summary": "Mobile app designed to help soldiers with day to day tasks Allows for quick search of NSNs, DA forms, regulations, mental health services, and more Not currently available for Android (As of March 2023\\)",
-    "categories": [
-      "military-related"
-    ],
-    "tags": [
-      "military-related"
-    ],
-    "eligibility": [],
-    "source": {
-      "type": "pdf",
-      "reference": "Military Benefits & Resources.md"
-    },
-    "addedBy": "1LT John Smith",
-    "addedAt": "2025-12-14T15:57:08.907734Z"
-  },
-  {
     "id": "auto-skills-center",
     "name": "Auto Skills Center",
     "url": "https://www.armymwr.com/programs-and-services/automotive-skills",
@@ -4689,11 +4500,9 @@
   {
     "id": "mycaa",
     "name": "MyCAA",
-    "url": "https://www.militaryonesource.mil/resources/network/mycaa-scholarship/?gclid=Cj0KCQjw3a2iBhCFARIsAD4jQB0Vde8TJNtv1iqdQpDuoD7ADjG4BCa4Uto66bKPHY3aFjRa66xJk4UaAttwEALw_wcB",
+    "url": "https://www.militaryonesource.mil/resources/network/mycaa-scholarship/",
     "urls": [
-      "https://www.militaryonesource.mil/resources/network/mycaa-scholarship/?gclid=Cj0KCQjw3a2iBhCFARIsAD4jQB0Vde8TJNtv1iqdQpDuoD7ADjG4BCa4Uto66bKPHY3aFjRa66xJk4UaAttwEALw_wcB",
-      "https://www.militaryonesource.mil/resources/network/mycaa-scholarship/?gclid=Cj0KCQjw3a2iBhCFARIsAD4jQB0Vde8TJNtv1iqdQpDuoD7ADjG4BCa4Uto66bKPHY3aFjRa66xJk4UaAttwEALw_wcB",
-      "https://www.militaryonesource.mil/resources/network/mycaa-scholarship/?gclid=Cj0KCQjw3a2iBhCFARIsAD4jQB0Vde8TJNtv1iqdQpDuoD7ADjG4BCa4Uto66bKPHY3aFjRa66xJk4UaAttwEALw_wcB"
+      "https://www.militaryonesource.mil/resources/network/mycaa-scholarship/"
     ],
     "summary": "Educational scholarships for military spouses",
     "categories": [
@@ -4785,11 +4594,9 @@
   {
     "id": "spouse-licensure-reimbursement-program",
     "name": "Spouse Licensure Reimbursement Program",
-    "url": "https://www.militaryonesource.mil/education-employment/for-spouses/education-training-licensing/transferring-your-professional-license-what-s-involved/",
+    "url": "https://www.militaryonesource.mil/education-employment/for-spouses/",
     "urls": [
-      "https://www.militaryonesource.mil/education-employment/for-spouses/education-training-licensing/transferring-your-professional-license-what-s-involved/",
-      "https://www.militaryonesource.mil/education-employment/for-spouses/education-training-licensing/transferring-your-professional-license-what-s-involved/",
-      "https://www.militaryonesource.mil/education-employment/for-spouses/education-training-licensing/transferring-your-professional-license-what-s-involved/"
+      "https://www.militaryonesource.mil/education-employment/for-spouses/"
     ],
     "summary": "Reimburses a civilian spouse for professional license costs up to $1,000 upon PCS to a new state",
     "categories": [
@@ -4809,11 +4616,9 @@
   {
     "id": "va-home-loan",
     "name": "VA Home Loan",
-    "url": "https://www.militaryonesource.mil/military-life-cycle/separation-transition/military-separation-retirement/the-department-of-veterans-affairs-home-loan-basics/",
+    "url": "https://www.va.gov/housing-assistance/home-loans/",
     "urls": [
-      "https://www.militaryonesource.mil/military-life-cycle/separation-transition/military-separation-retirement/the-department-of-veterans-affairs-home-loan-basics/",
-      "https://www.militaryonesource.mil/military-life-cycle/separation-transition/military-separation-retirement/the-department-of-veterans-affairs-home-loan-basics/",
-      "https://www.militaryonesource.mil/military-life-cycle/separation-transition/military-separation-retirement/the-department-of-veterans-affairs-home-loan-basics/"
+      "https://www.va.gov/housing-assistance/home-loans/"
     ],
     "summary": "Invaluable home loans offered by the VA with low interest rates and no down payment required This is very helpful for those looking to own a home",
     "categories": [
@@ -5026,11 +4831,9 @@
   {
     "id": "new-mexico-state-veteran-benefits",
     "name": "New Mexico State Veteran Benefits",
-    "url": "https://www.nmdvs.org/state-veteran-benefits/",
+    "url": "https://www.nmdvs.org/benefits/",
     "urls": [
-      "https://www.nmdvs.org/state-veteran-benefits/",
-      "https://www.nmdvs.org/state-veteran-benefits/",
-      "https://www.nmdvs.org/state-veteran-benefits/"
+      "https://www.nmdvs.org/benefits/"
     ],
     "summary": "New Mexico offers a variety of benefits for veterans, including Property Tax exemption, reduced registration fees, and more",
     "categories": [
@@ -5098,11 +4901,9 @@
   {
     "id": "o-reilly-media",
     "name": "O'Reilly Media",
-    "url": "https://www.dodmwrlibraries.org/how-do-i-0",
+    "url": "https://www.dodmwrlibraries.org/",
     "urls": [
-      "https://www.dodmwrlibraries.org/how-do-i-0",
-      "https://www.dodmwrlibraries.org/how-do-i-0",
-      "https://www.dodmwrlibraries.org/how-do-i-0"
+      "https://www.dodmwrlibraries.org/"
     ],
     "summary": "Exclusive live training, interactive learning, a certification experience, books, videos, and more on everything IT, computer science and cyber Includes practice exams for several high-level certifications Great for soldiers interested in signal/cyber fields out of the military Accounts are deactivated after 30 days inactivity",
     "categories": [
@@ -5262,30 +5063,6 @@
     },
     "addedBy": "1LT John Smith",
     "addedAt": "2025-12-14T15:57:08.907973Z"
-  },
-  {
-    "id": "vet-journey",
-    "name": "Vet Journey",
-    "url": "https://vetjourney.com/",
-    "urls": [
-      "https://vetjourney.com/",
-      "https://vetjourney.com/",
-      "https://vetjourney.com/"
-    ],
-    "summary": "Helping soldiers transition out of the military by offering a comprehensive library of transitioning resources and helping set up their future career Also builds a 12-month separation timeline to help simplify all transitioning tasks",
-    "categories": [
-      "transitioning-out-of-the-military"
-    ],
-    "tags": [
-      "transitioning-out-of-the-military"
-    ],
-    "eligibility": [],
-    "source": {
-      "type": "pdf",
-      "reference": "Military Benefits & Resources.md"
-    },
-    "addedBy": "1LT John Smith",
-    "addedAt": "2025-12-14T15:57:08.907981Z"
   },
   {
     "id": "veteran-readiness-employment-vr-e",
