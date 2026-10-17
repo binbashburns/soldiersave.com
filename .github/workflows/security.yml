@@ -100,7 +100,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       # 8 workers / 10s keeps the worst case (2 requests per URL) inside the
