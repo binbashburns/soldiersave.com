@@ -13,6 +13,7 @@
 <div class="search-bar">
     <input class="search-input"
            type="search"
+           aria-label="Search benefits"
            placeholder="Search benefits by name, tag, category, or description"
            @bind="SearchText"
            @bind:event="oninput" />
@@ -23,7 +24,7 @@
     @foreach (var tag in Tags)
     {
         <button class="@GetTagButtonClass(tag)"
-                style="@GetTagButtonStyle(tag)"
+                aria-pressed="@(string.Equals(tag, SelectedTag, StringComparison.OrdinalIgnoreCase) ? "true" : "false")"
                 @onclick="@(() => SelectTag(tag))">@tag</button>
     }
 </div>
@@ -31,6 +32,13 @@
 @if (IsLoading)
 {
     <p>Loading benefits...</p>
+}
+else if (LoadError is not null)
+{
+    <div role="alert">
+        <p>@LoadError</p>
+        <button class="btn btn-primary" @onclick="LoadBenefitsAsync">Try again</button>
+    </div>
 }
 else if (FilteredBenefits.Count == 0)
 {
@@ -42,7 +50,16 @@ else
         @foreach (var benefit in FilteredBenefits)
         {
             <li class="benefit-item">
-                <h3><a href="@benefit.Url" target="_blank" rel="noopener noreferrer">@benefit.Name</a></h3>
+                <h2 class="h3">
+                    @if (IsSafeExternalUrl(benefit.Url))
+                    {
+                        <a href="@benefit.Url" target="_blank" rel="noopener noreferrer">@benefit.Name</a>
+                    }
+                    else
+                    {
+                        @benefit.Name
+                    }
+                </h2>
                 <p>@benefit.Summary</p>
                 <p>
                     <small>
@@ -81,6 +98,7 @@ else
     private readonly string AllTag = "All";
 
     private bool IsLoading { get; set; } = true;
+    private string? LoadError { get; set; }
     private List<Benefit> AllBenefits { get; set; } = new();
     private List<Benefit> FilteredBenefits { get; set; } = new();
     private string SelectedTag { get; set; } = "All";
@@ -103,24 +121,46 @@ else
 
     private List<string> Tags { get; set; } = new() { "All" };
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync() => LoadBenefitsAsync();
+
+    private async Task LoadBenefitsAsync()
     {
-        AllBenefits = (await BenefitService.GetBenefitsAsync()).ToList();
+        IsLoading = true;
+        LoadError = null;
+        try
+        {
+            AllBenefits = (await BenefitService.GetBenefitsAsync()).ToList();
 
-        var allTags = AllBenefits
-            .SelectMany(b => b.Tags)
-            .Where(t => !string.IsNullOrWhiteSpace(t))
-            .Select(t => t.Trim())
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .OrderBy(t => t, StringComparer.OrdinalIgnoreCase)
-            .ToList();
+            var allTags = AllBenefits
+                .SelectMany(b => b.Tags)
+                .Where(t => !string.IsNullOrWhiteSpace(t))
+                .Select(t => t.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(t => t, StringComparer.OrdinalIgnoreCase)
+                .ToList();
 
-        Tags = new List<string> { AllTag };
-        Tags.AddRange(allTags);
+            Tags = new List<string> { AllTag };
+            Tags.AddRange(allTags);
 
-        ApplyFilter();
-        IsLoading = false;
+            ApplyFilter();
+        }
+        catch (Exception ex) when (ex is HttpRequestException or System.Text.Json.JsonException or OperationCanceledException)
+        {
+            LoadError = "We couldn't load the benefits. Please try again.";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
+
+    // Last line of defence for the href. validate_catalog.py and benefit-import.cjs
+    // both reject non-HTTP(S) URLs, but they run in CI and a record edited by hand
+    // and merged directly would bypass them; a javascript: URL must never become a
+    // live link.
+    private static bool IsSafeExternalUrl(string? url) =>
+        Uri.TryCreate(url, UriKind.Absolute, out var parsed) &&
+        (parsed.Scheme == Uri.UriSchemeHttp || parsed.Scheme == Uri.UriSchemeHttps);
 
     private void SelectTag(string tag)
     {
@@ -144,37 +184,35 @@ else
             query = query.Where(b =>
                 b.Name.Contains(term, StringComparison.OrdinalIgnoreCase) ||
                 b.Summary.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                b.Categories.Any(c => c.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
                 b.Tags.Any(t => t.Contains(term, StringComparison.OrdinalIgnoreCase)));
         }
 
         FilteredBenefits = query.ToList();
     }
 
+    // Must match the number of .tag-color-N rules in wwwroot/css/app.css.
+    private const uint TagColorCount = 8;
+
     private string GetTagButtonClass(string tag)
     {
         var isSelected = string.Equals(tag, SelectedTag, StringComparison.OrdinalIgnoreCase);
-        return isSelected ? "tag-button selected" : "tag-button";
+        return isSelected ? "tag-button selected" : $"tag-button {GetTagColorClass(tag)}";
     }
 
-    private string GetTagButtonStyle(string tag)
+    // Color comes from a class rather than an inline style attribute: the page
+    // CSP sets style-src 'self', which blocks inline styles outright.
+    private static string GetTagColorClass(string tag)
     {
-        var isSelected = string.Equals(tag, SelectedTag, StringComparison.OrdinalIgnoreCase);
-        if (isSelected)
+        // FNV-1a over the lowercased tag: unsigned and stable across processes,
+        // unlike string.GetHashCode, so a tag keeps its color between reloads.
+        uint hash = 2166136261;
+        foreach (var character in tag.ToLowerInvariant())
         {
-            return string.Empty;
+            hash = unchecked((hash ^ character) * 16777619);
         }
 
-        // Simple deterministic color palette based on tag hash
-        var colors = new[]
-        {
-            "#e0f2ff", "#e0ffe8", "#fff4e0", "#f3e0ff", "#ffe0ea",
-            "#e0fff8", "#f0ffe0", "#e8e0ff"
-        };
-
-        var index = Math.Abs(tag.ToLowerInvariant().GetHashCode());
-        var color = colors[index % colors.Length];
-
-        return $"background-color: {color};";
+        return $"tag-color-{hash % TagColorCount}";
     }
 
     private string GetInlineTagClass(string tag)

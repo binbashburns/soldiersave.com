@@ -1,39 +1,121 @@
+# Security scanning is delegated to the reusable workflows in
+# binbashburns/security-pipelines. See docs/ci.md for what each job covers.
+#
+# The `@main` refs track that library's default branch. Once it cuts a release,
+# pin these to a tag or commit SHA.
+#
+# DAST currently scans the deployed site because the reusable workflows check out
+# the CALLER's repo and cannot build a Blazor app themselves. Once
+# security-pipelines ships its `site-artifact` / `site-path` inputs, switch to
+# .github/workflows/security-site-artifact.yml.example, which builds once and
+# hands the published output to both dast and link-check.
 name: security
 
 on:
   pull_request:
     branches: [main]
-    paths:
-      - "**/*.html"
-      - "**/*.css"
-      - "**/*.js"
-      - "**/*.md"
-      - ".github/workflows/security.yml"
   push:
     branches: [main]
   schedule:
     - cron: "0 6 * * 1"
+  workflow_dispatch:
 
-permissions:
-  contents: read
-  pull-requests: write
-  issues: write
+# Concurrency lives in the caller: `github.workflow` inside a called workflow
+# resolves to that file's name, so only this file can key the group safely.
+concurrency:
+  group: security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions: {}
 
 jobs:
+  # Stage 1 - gate: fail fast on credentials before anything else runs.
   secrets:
     uses: binbashburns/security-pipelines/.github/workflows/secrets.yml@main
+    permissions:
+      contents: read
 
-  link-check:
-    uses: binbashburns/security-pipelines/.github/workflows/link-check.yml@main
-    with:
-      paths: "**/*.html **/*.md"
-      create-issue: true
-
+  # Stage 2 - static analysis, in parallel once secrets passes.
   sast:
+    needs: secrets
     if: github.event_name == 'pull_request'
     uses: binbashburns/security-pipelines/.github/workflows/sast.yml@main
+    permissions:
+      contents: read
+      pull-requests: write
     with:
-      language: javascript
+      language: csharp,javascript,python
 
+  # Dependency vulnerabilities. Needs packages.lock.json (enabled via
+  # RestorePackagesWithLockFile in the csproj) or Syft finds only action refs
+  # and Grype has nothing to scan.
+  sbom:
+    needs: secrets
+    uses: binbashburns/security-pipelines/.github/workflows/sbom-vuln.yml@main
+    permissions:
+      contents: read
+      pull-requests: write
+
+  # Prose links only. The site's own HTML references Blazor assets that do not
+  # exist until after a publish, so scanning source HTML only produces noise.
+  # create-issue stays false: this pipeline's @main issue step opens a NEW issue
+  # per failing run, which is what produced the long backlog of dated
+  # "Link check failures" issues. Findings stay in the job summary and artifact.
+  link-check:
+    needs: secrets
+    uses: binbashburns/security-pipelines/.github/workflows/link-check.yml@main
+    permissions:
+      contents: read
+      issues: write
+    with:
+      paths: "README.md CONTRIBUTING.md SECURITY.md docs/*.md"
+      create-issue: false
+
+  # Stage 3 - dynamic scan against the deployed site. serve-port 0 skips the
+  # local static server, which would otherwise serve this repo's source tree.
   dast:
+    needs: secrets
     uses: binbashburns/security-pipelines/.github/workflows/dast.yml@main
+    permissions:
+      contents: read
+      pull-requests: write
+    with:
+      serve-port: 0
+      target-url: https://soldiersave.com/
+
+  # Catalog link audit. Separate from the lychee job above: it checks the 200+
+  # external benefit URLs and maintains its own single tracking issue.
+  benefit-links:
+    needs: secrets
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      issues: write
+    concurrency:
+      group: benefit-link-report
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # 8 workers / 10s keeps the worst case (2 requests per URL) inside the
+      # 20 minute job timeout; the defaults do not.
+      - name: Check catalog URLs
+        run: python .github/scripts/check_benefit_links.py --workers 8 --timeout 10
+      - name: Save link report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: benefit-link-report
+          path: artifacts/link-check/
+      - name: Update benefit link tracking issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const report = require('./.github/scripts/report-benefit-links.cjs');
+            await report({ github, context, core });

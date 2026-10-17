@@ -1,0 +1,138 @@
+# STAGED - NOT ACTIVE.
+#
+# GitHub Actions only loads .yml/.yaml files from .github/workflows, so the
+# .example suffix keeps this inert while it sits next to the file it replaces.
+#
+# Switch to this once binbashburns/security-pipelines publishes the
+# `site-artifact` and `site-path` inputs on link-check.yml and dast.yml. As of
+# this writing they exist only in that repo's working tree, not at @main, and a
+# call using them fails with "invalid input". That repo is under active change,
+# so re-check the input names against what actually shipped before renaming this
+# file over .github/workflows/security.yml.
+#
+# Why bother: reusable workflows check out the CALLER's repo and have no .NET
+# build step, so they cannot produce the published Blazor output themselves.
+# Building once here and handing the artifact to both scanners means ZAP scans
+# the real application rather than the deployed site (so a regression is caught
+# on the PR, before deploy), and lychee checks the generated HTML with its asset
+# references resolved instead of the unbuilt source.
+name: security
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions: {}
+
+jobs:
+  # Stage 1 - gate: fail fast on credentials before anything else runs.
+  secrets:
+    uses: binbashburns/security-pipelines/.github/workflows/secrets.yml@main
+    permissions:
+      contents: read
+
+  # Build once; every scanner below consumes this artifact.
+  build-site:
+    needs: secrets
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      - run: dotnet restore --locked-mode
+      - run: dotnet publish src/SoldierSave.Web/SoldierSave.Web.csproj -c Release -o _site
+      - uses: actions/upload-artifact@v4
+        with:
+          name: soldiersave-site
+          path: _site/wwwroot/
+          if-no-files-found: error
+
+  # Stage 2 - static analysis.
+  sast:
+    needs: secrets
+    if: github.event_name == 'pull_request'
+    uses: binbashburns/security-pipelines/.github/workflows/sast.yml@main
+    permissions:
+      contents: read
+      pull-requests: write
+    with:
+      language: csharp,javascript,python
+
+  sbom:
+    needs: secrets
+    uses: binbashburns/security-pipelines/.github/workflows/sbom-vuln.yml@main
+    permissions:
+      contents: read
+      pull-requests: write
+
+  # Now checks the BUILT html, so SoldierSave.Web.styles.css and the root-relative
+  # hrefs in index.html resolve instead of reporting as dead links.
+  link-check:
+    needs: [secrets, build-site]
+    uses: binbashburns/security-pipelines/.github/workflows/link-check.yml@main
+    permissions:
+      contents: read
+      issues: write
+    with:
+      paths: "README.md CONTRIBUTING.md SECURITY.md docs/*.md _site/**/*.html"
+      create-issue: true
+      site-artifact: soldiersave-site
+      site-path: _site
+
+  # Stage 3 - dynamic scan of the freshly built app rather than the live site.
+  dast:
+    needs: [secrets, sbom, build-site]
+    uses: binbashburns/security-pipelines/.github/workflows/dast.yml@main
+    permissions:
+      contents: read
+      pull-requests: write
+    with:
+      site-artifact: soldiersave-site
+      serve-path: _site
+
+  benefit-links:
+    needs: secrets
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      issues: write
+    concurrency:
+      group: benefit-link-report
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check catalog URLs
+        run: python .github/scripts/check_benefit_links.py --workers 8 --timeout 10
+      - name: Save link report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: benefit-link-report
+          path: artifacts/link-check/
+      - name: Update benefit link tracking issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const report = require('./.github/scripts/report-benefit-links.cjs');
+            await report({ github, context, core });

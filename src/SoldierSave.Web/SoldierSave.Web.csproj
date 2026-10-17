@@ -4,6 +4,15 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- packages.lock.json exists so Syft/Grype and Dependabot have a dependency
+         graph to read; without it the SBOM job catalogs only GitHub Action refs
+         and skips the vulnerability scan. CI deliberately does NOT restore with
+         the locked-mode flag: the SDK adds implicit references (ILLink.Tasks,
+         Sdk.WebAssembly.Pack) whose versions come from the runner's installed
+         workload manifests, not from the SDK version, so the same SDK yields
+         different lock entries on different machines. Regenerate after changing
+         a PackageReference with a restore using the force-evaluate flag. -->
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +26,11 @@
     <Copy SourceFiles="..\..\data\benefits.json"
           DestinationFiles="wwwroot/data/benefits.json"
           SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="CreatePagesFallback" AfterTargets="Publish">
+    <Copy SourceFiles="$(PublishDir)wwwroot/index.html"
+          DestinationFiles="$(PublishDir)wwwroot/404.html" />
   </Target>
 
 </Project>

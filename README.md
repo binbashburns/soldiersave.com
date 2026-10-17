@@ -3,7 +3,7 @@
 [![Last commit](https://img.shields.io/github/last-commit/binbashburns/soldiersave.com?color=bd93f9&labelColor=282a36)](https://github.com/binbashburns/soldiersave.com/commits/main)
 [![Open issues](https://img.shields.io/github/issues/binbashburns/soldiersave.com?color=ff5555&labelColor=282a36)](https://github.com/binbashburns/soldiersave.com/issues)
 [![Live site](https://img.shields.io/badge/live-SoldierSave.com-50fa7b?labelColor=282a36)](https://soldiersave.com)
-[![Benefits](https://img.shields.io/badge/benefits-219-6272a4?labelColor=282a36)](data/benefits.json)
+[![Benefits](https://img.shields.io/badge/benefits-211-6272a4?labelColor=282a36)](data/benefits.json)
 [![Resume](https://img.shields.io/badge/resume-binbashburns.com-F1FA8C?labelColor=282a36)](https://binbashburns.com)
 
 Repository that holds links and data for SoldierSave. Open an issue to add a new resource now!
@@ -19,10 +19,9 @@ Repository that holds links and data for SoldierSave. Open an issue to add a new
 
 ## Running the Blazor site locally
 
-From the repo root (`soldiersave.com` directory):
+From the repo root:
 
 ```bash
-cd soldiersave.com
 dotnet restore
 dotnet run --project src/SoldierSave.Web/SoldierSave.Web.csproj
 ```
@@ -59,17 +58,41 @@ For general improvements or new capabilities (not specific to a single benefit),
 
 These issues help shape the roadmap for SoldierSave.com and are the main way to collect feedback and future ideas.
 
+## Running the tests
+
+Three suites cover the site and its automation. The browser suite needs a Release publish first, at
+that exact path.
+
+```bash
+python -m pip install -r .github/scripts/requirements.txt -r tests/browser/requirements.txt
+
+node --test tests/workflows/*.test.cjs                      # issue-form importer
+python -m unittest discover -s tests/maintenance -v          # maintenance scripts
+python .github/scripts/validate_catalog.py                   # catalog schema + invariants
+
+dotnet publish src/SoldierSave.Web/SoldierSave.Web.csproj -c Release -o artifacts/publish
+python .github/scripts/check_publish.py artifacts/publish/wwwroot
+python -m playwright install chromium
+python -m unittest discover -s tests/browser -v              # Playwright
+```
+
 ## Automatic link checking
 
-To keep links fresh, a scheduled GitHub Actions workflow runs once a week and checks every URL in `data/benefits.json`:
+A scheduled GitHub Actions job runs weekly and checks every URL in `data/benefits.json`:
 
-- For each unique URL, it performs an HTTP request (HEAD with a GET fallback).
-- Responses in the 2xx–3xx range are treated as successful.
-- Any failures (4xx/5xx responses or network errors) are collected and reported.
-- If any broken or suspicious links are found, the workflow automatically opens a GitHub issue labeled:
-  - `type:bug`
-  - `area:data`
-  - `link-check`
+- Each unique URL gets an HTTP request (HEAD, falling back to GET).
+- Responses in the 2xx–3xx range count as successful.
+- Results are classified as `ok`, `error`, or `unverified`. **Unverified is not broken** — many
+  retailers and `.mil` sites reject requests from CI runners with a 403 or drop the connection
+  entirely, which says nothing about whether the benefit is still available. Only `error` rows are
+  worth acting on without visiting the page.
+- Findings are written to a workflow artifact and to a single tracking issue labeled `type:bug`,
+  `area:data`, and `benefit-link-check`. The issue is updated in place rather than reopened, and is
+  closed automatically once every link responds.
+
+A broken external site never fails the build.
+
+See [`docs/ci.md`](docs/ci.md) for the full CI and security pipeline layout.
 
 ## Screenshots
 
