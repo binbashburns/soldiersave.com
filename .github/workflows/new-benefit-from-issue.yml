@@ -36,7 +36,7 @@ jobs:
       # exists, so a malformed submission cannot reach main unchecked.
       - name: Setup Python
         if: ${{ steps.apply-benefit.outputs.benefit-id != '' }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.12'
 
